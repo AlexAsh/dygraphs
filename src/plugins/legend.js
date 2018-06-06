@@ -103,6 +103,13 @@ Legend.prototype.select = function(e) {
   }
 
   if (legendMode === 'follow') {
+    // find the highest point of the graph
+    var topY = points[0].y;
+    points.forEach(function (point) {
+        if (point.y < topY) {
+            topY = point.y;
+        }
+    });
     // create floating legend div
     var area = e.dygraph.plotter_.area;
     var labelsDivWidth = this.legend_div_.offsetWidth;
@@ -112,7 +119,7 @@ Legend.prototype.select = function(e) {
     // offset 50 px to the right and down from the first selection point
     // 50 px is guess based on mouse cursor size
     var leftLegend = points[0].x * area.w + 50;
-    var topLegend  = points[0].y * area.h - 50;
+    var topLegend  = topY * area.h - 50;
 
     // if legend floats to end of the chart area, it flips to the other
     // side of the selection point
