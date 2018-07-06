@@ -103,23 +103,34 @@ Legend.prototype.select = function(e) {
   }
 
   if (legendMode === 'follow') {
-    // find the highest point of the graph
-    var topY = points[0].y;
-    points.forEach(function (point) {
-        if (point.y < topY) {
-            topY = point.y;
-        }
-    });
     // create floating legend div
     var area = e.dygraph.plotter_.area;
+
+    if (this.legend_div_.style.display === 'none') {
+        this.legend_div_.style.display = '';
+    }
+
     var labelsDivWidth = this.legend_div_.offsetWidth;
     var yAxisLabelWidth = e.dygraph.getOptionForAxis('axisLabelWidth', 'y');
-    // determine floating [left, top] coordinates of the legend div
-    // within the plotter_ area
-    // offset 50 px to the right and down from the first selection point
-    // 50 px is guess based on mouse cursor size
-    var leftLegend = points[0].x * area.w + 50;
-    var topLegend  = topY * area.h - 50;
+
+    var offsetTop = 0, offsetLeft = 0, elemGraph = e.dygraph.canvas_;
+
+    while (elemGraph.offsetParent !== null) {
+      offsetTop += elemGraph.offsetTop;
+      offsetLeft += elemGraph.offsetLeft;
+      elemGraph = elemGraph.offsetParent;
+    }
+    var mouseX = (typeof e.dygraph.mouse === 'undefined' || typeof e.dygraph.mouse.x === 'undefined') ? offsetLeft : e.dygraph.mouse.x,
+      mouseY = (typeof e.dygraph.mouse === 'undefined' || typeof e.dygraph.mouse.y === 'undefined') ? offsetTop : e.dygraph.mouse.y;
+
+      // determine floating [left, top] coordinates of the legend div
+      // within the plotter_ area
+      // offset 50 px to the right and down from the first selection point
+      // 50 px is guess based on mouse cursor size
+      // var leftLegend = points[0].x * area.w + 50;
+      // changed to 20
+    var leftLegend = mouseX - offsetLeft + window.scrollX + 20;
+    var topLegend  = mouseY - offsetTop + window.scrollY - 20;
 
     // if legend floats to end of the chart area, it flips to the other
     // side of the selection point
