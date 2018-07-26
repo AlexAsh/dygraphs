@@ -111,6 +111,7 @@ Legend.prototype.select = function(e) {
     }
 
     var labelsDivWidth = this.legend_div_.offsetWidth;
+    var labelsDivHeight = this.legend_div_.offsetHeight;
     var yAxisLabelWidth = e.dygraph.getOptionForAxis('axisLabelWidth', 'y');
 
     var offsetTop = 0, offsetLeft = 0, elemGraph = e.dygraph.canvas_;
@@ -120,8 +121,9 @@ Legend.prototype.select = function(e) {
       offsetLeft += elemGraph.offsetLeft;
       elemGraph = elemGraph.offsetParent;
     }
-    var mouseX = (typeof e.dygraph.mouse === 'undefined' || typeof e.dygraph.mouse.x === 'undefined') ? offsetLeft : e.dygraph.mouse.x,
-      mouseY = (typeof e.dygraph.mouse === 'undefined' || typeof e.dygraph.mouse.y === 'undefined') ? offsetTop : e.dygraph.mouse.y;
+
+    var mouseX = (typeof e.dygraph.mouse === 'undefined' || typeof e.dygraph.mouse.clientX === 'undefined') ? (offsetLeft - window.scrollX) : e.dygraph.mouse.clientX,
+      mouseY = (typeof e.dygraph.mouse === 'undefined' || typeof e.dygraph.mouse.clientY === 'undefined') ? (offsetTop - window.scrollY) : e.dygraph.mouse.clientY;
 
       // determine floating [left, top] coordinates of the legend div
       // within the plotter_ area
@@ -136,6 +138,9 @@ Legend.prototype.select = function(e) {
     // side of the selection point
     if ((leftLegend + labelsDivWidth + 1) > area.w) {
       leftLegend = leftLegend - 2 * 50 - labelsDivWidth - (yAxisLabelWidth - area.x);
+    }
+    if ((topLegend + labelsDivHeight + 1) > area.h) {
+        topLegend = topLegend - 75 - labelsDivHeight + area.y;
     }
 
     e.dygraph.graphDiv.appendChild(this.legend_div_);
