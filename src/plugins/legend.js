@@ -140,12 +140,20 @@ Legend.prototype.select = function(e) {
       leftLegend = leftLegend - 2 * 50 - labelsDivWidth - (yAxisLabelWidth - area.x);
     }
     if ((topLegend + labelsDivHeight + 1) > area.h) {
-        topLegend = topLegend - 75 - labelsDivHeight + area.y;
+        topLegend = area.h - labelsDivHeight - 1;
     }
 
     e.dygraph.graphDiv.appendChild(this.legend_div_);
     this.legend_div_.style.left = yAxisLabelWidth + leftLegend + "px";
     this.legend_div_.style.top = topLegend + "px";
+    this.legend_div_.addEventListener('mousemove',
+      function (event) {
+        e.dygraph.graphDiv.childNodes[1].dispatchEvent(
+          new event.constructor('mouseout', event)
+        );
+      },
+      false
+    );
   }
 
   var html = Legend.generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_, row);
