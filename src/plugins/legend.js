@@ -131,14 +131,15 @@ Legend.prototype.select = function(e) {
       // 50 px is guess based on mouse cursor size
       // var leftLegend = points[0].x * area.w + 50;
       // changed to 20
-    var leftLegend = mouseX - offsetLeft + window.scrollX + 20;
+    var leftLegend = mouseX - offsetLeft - labelsDivWidth - yAxisLabelWidth - 20;
     var topLegend  = mouseY - offsetTop + window.scrollY - 20;
 
     // if legend floats to end of the chart area, it flips to the other
     // side of the selection point
-    if ((leftLegend + labelsDivWidth + 1) > area.w) {
-      leftLegend = leftLegend - 2 * 50 - labelsDivWidth - (yAxisLabelWidth - area.x);
+    if (leftLegend < 1) {
+      leftLegend = leftLegend + labelsDivWidth + yAxisLabelWidth;
     }
+
     if ((topLegend + labelsDivHeight + 1) > area.h) {
         topLegend = area.h - labelsDivHeight - 1;
     }
