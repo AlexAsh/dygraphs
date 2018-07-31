@@ -1616,7 +1616,7 @@ Dygraph.prototype.mouseMove_ = function(event) {
     var idx = this.findClosestRow(canvasx);
     selectionChanged = this.setSelection(idx);
   }
-
+  this.updateSelection_();
   var callback = this.getFunctionOption("highlightCallback");
 
   if (callback && selectionChanged) {

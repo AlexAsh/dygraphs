@@ -47,7 +47,7 @@ Legend.prototype.toString = function() {
  * @param {Dygraph} g Graph instance.
  * @return {object.<string, function(ev)>} Mapping of event names to callbacks.
  */
-Legend.prototype.activate = function(g) {
+Legend.prototype.activate = function (g) {
   var div;
 
   var userLabelsDiv = g.getOption('labelsDiv');
@@ -66,6 +66,14 @@ Legend.prototype.activate = function(g) {
   }
 
   this.legend_div_ = div;
+  if ('follow' === g.getOption('legend')) {
+    this.legend_div_.addEventListener('mousemove',
+      function (event) {
+        g.mouseMove_(event);
+      },
+      false
+    );
+  }
   this.one_em_width_ = 10;  // just a guess, will be updated.
 
   return {
@@ -147,14 +155,6 @@ Legend.prototype.select = function(e) {
     e.dygraph.graphDiv.appendChild(this.legend_div_);
     this.legend_div_.style.left = yAxisLabelWidth + leftLegend + "px";
     this.legend_div_.style.top = topLegend + "px";
-    this.legend_div_.addEventListener('mousemove',
-      function (event) {
-        e.dygraph.graphDiv.childNodes[1].dispatchEvent(
-          new event.constructor('mouseout', event)
-        );
-      },
-      false
-    );
   }
 
   var html = Legend.generateLegendHTML(e.dygraph, xValue, points, this.one_em_width_, row);
