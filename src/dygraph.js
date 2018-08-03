@@ -1593,8 +1593,8 @@ Dygraph.prototype.findStackedPoint = function(domX, domY) {
  * @private
  */
 Dygraph.prototype.mouseMove_ = function(event) {
-  // This prevents JS errors when mousing over the canvas before data loads.
   this.mouse = event;
+  // This prevents JS errors when mousing over the canvas before data loads.
   var points = this.layout_.points;
   if (points === undefined || points === null) return;
 
@@ -1616,7 +1616,9 @@ Dygraph.prototype.mouseMove_ = function(event) {
     var idx = this.findClosestRow(canvasx);
     selectionChanged = this.setSelection(idx);
   }
-  this.updateSelection_();
+  if ('follow' === this.getOption('legend')) {
+    this.updateSelection_();
+  }
   var callback = this.getFunctionOption("highlightCallback");
 
   if (callback && selectionChanged) {

@@ -69,7 +69,14 @@ Legend.prototype.activate = function (g) {
   if ('follow' === g.getOption('legend')) {
     this.legend_div_.addEventListener('mousemove',
       function (event) {
-        g.mouseMove_(event);
+        var legendRect = this.getBoundingClientRect(),
+            canvasRect = g.canvas_.getBoundingClientRect(),
+            eventData = Object.assign({}, event, {
+              offsetX: event.offsetX + legendRect.x - canvasRect.x,
+              offsetY: event.offsetY + legendRect.y - canvasRect.y
+            });
+
+        g.mouseMove_(eventData);
       },
       false
     );
@@ -105,7 +112,7 @@ Legend.prototype.select = function(e) {
   var row = e.selectedRow;
 
   var legendMode = e.dygraph.getOption('legend');
-  if (legendMode === 'never') {
+  if ((legendMode === 'never') || (e.dygraph.mouse.offsetX < e.dygraph.getOption('axisLabelWidth'))) {
     this.legend_div_.style.display = 'none';
     return;
   }
@@ -130,8 +137,8 @@ Legend.prototype.select = function(e) {
       elemGraph = elemGraph.offsetParent;
     }
 
-    var mouseX = (typeof e.dygraph.mouse === 'undefined' || typeof e.dygraph.mouse.clientX === 'undefined') ? (offsetLeft - window.scrollX) : e.dygraph.mouse.clientX,
-      mouseY = (typeof e.dygraph.mouse === 'undefined' || typeof e.dygraph.mouse.clientY === 'undefined') ? (offsetTop - window.scrollY) : e.dygraph.mouse.clientY;
+    var mouseX = e.dygraph.mouse.offsetX,
+      mouseY = e.dygraph.mouse.offsetY;
 
       // determine floating [left, top] coordinates of the legend div
       // within the plotter_ area
@@ -139,8 +146,8 @@ Legend.prototype.select = function(e) {
       // 50 px is guess based on mouse cursor size
       // var leftLegend = points[0].x * area.w + 50;
       // changed to 20
-    var leftLegend = mouseX - offsetLeft - labelsDivWidth - yAxisLabelWidth - 20;
-    var topLegend  = mouseY - offsetTop + window.scrollY - 20;
+    var leftLegend = mouseX - labelsDivWidth - yAxisLabelWidth - 20;
+    var topLegend  = mouseY - 20;
 
     // if legend floats to end of the chart area, it flips to the other
     // side of the selection point
